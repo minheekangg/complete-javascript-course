@@ -1,6 +1,7 @@
 import Search from './models/Search';
 import Recipe from './models/Recipe';
 import * as searchView from './views/searchView';
+import * as recipeView from './views/recipeView';
 import { elements, renderLoader, clearLoader } from './views/base';
 // I AM A GLOBAL CONTROLLER
 /** Global state of the app
@@ -61,7 +62,14 @@ const controlRecipe = async () => {
 
     if (id) {
         //2. Prepare for UI changes
-        
+        recipeView.clearRecipe();
+        renderLoader(elements.recipe);
+
+        //update search view 
+        if (state.search) {
+            searchView.highlightSelected(id);
+        }
+
         //3. Create new recipe object
         state.recipe = new Recipe(id);
         
@@ -73,9 +81,11 @@ const controlRecipe = async () => {
             //5. calculate servings and time
             state.recipe.calcTime();
             state.recipe.calcServings();
+            state.recipe.parseIngredients();
     
             //6. render results on UI after promise resolved
-            console.log(state.recipe)
+            clearLoader();
+            recipeView.renderRecipe(state.recipe);
         } catch (err) {
             alert('Error processing recipe!')
         }
