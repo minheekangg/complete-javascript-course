@@ -8,9 +8,10 @@ export const clearInput = () => {
 
 export const clearResults = () => {
     elements.searchResList.innerHTML = '';
+    elements.searchResPages.innerHTML = '';
 }
 
-const limitRecipeTitle = (title, limit = 13) => {
+const limitRecipeTitle = (title, limit = 12) => {
     const newTitle = [];
     if (title.length > limit) {
         title.split(' ').reduce((acc, curr)=>{
@@ -44,10 +45,10 @@ const renderRecipe = recipe => {
 const createButton = (page, type) => {
     return `
         <button class="btn-inline results__btn--${type}" data-goto=${type === 'prev' ? page - 1 : page + 1}>
+            <span>Page ${type === 'prev' ? page-1 : page+1}</span>
             <svg class="search__icon">
                 <use href="img/icons.svg#icon-triangle-${type === 'prev' ? 'left' : 'right'}"></use>
             </svg>
-            <span>Page ${type === 'prev' ? page-1 : page+1}</span>
         </button>
     `;
 }

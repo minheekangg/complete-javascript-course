@@ -1,7 +1,8 @@
 import Search from './models/Search';
+import Recipe from './models/Recipe';
 import * as searchView from './views/searchView';
 import { elements, renderLoader, clearLoader } from './views/base';
-
+// I AM A GLOBAL CONTROLLER
 /** Global state of the app
  * - Search Object
  * - Shopping list object
@@ -10,6 +11,7 @@ import { elements, renderLoader, clearLoader } from './views/base';
  */
 const state = {};
 
+// SEARCH CONTROLLER
 const controlSearch = async () => {
     // 1. get query from view
     const query = searchView.getInput();
@@ -36,7 +38,15 @@ elements.searchForm.addEventListener('submit', e => {
     controlSearch();
 })
 
-// const res = await axios(`https://forkify-api.herokuapp.com/api/search?&q=${this.query}`);
+elements.searchResPages.addEventListener('click', e=> {
+    const btn = e.target.closest('.btn-inline');
 
+    if (btn) {
+        const goToPage = parseInt(btn.dataset.goto, 10);
+        searchView.clearResults();
+        searchView.renderResults(state.search.results, goToPage)
+    }
+})
 
-// I AM A GLOBAL CONTROLLER
+// RECIPE CONTROLLER
+
