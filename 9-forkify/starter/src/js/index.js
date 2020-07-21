@@ -14,10 +14,9 @@ import { elements, renderLoader, clearLoader } from './views/base';
  * - Current receipe object
  * - Liked recipes
  */
-const state = {
-    likes: new Likes(),
-};
+const state = {};
 // window.state = state;
+
 
 // SEARCH CONTROLLER
 const controlSearch = async () => {
@@ -134,7 +133,23 @@ elements.shoppingList.addEventListener('click', e=> {
     }
 })
 
-likesView.toggleLikeMenu(state.likes.getNumLikes())
+//restore liked recipe when page loads
+window.addEventListener('load',()=> {
+    state.likes =  new Likes();
+
+    //read localstorage
+    state.likes.readStorage();
+
+    //toggle like menu
+    likesView.toggleLikeMenu(state.likes.getNumLikes());
+
+    //render existing likes
+    if (state.likes.getNumLikes() > 0) {
+        state.likes.likes.forEach(el=>likesView.renderLike(el))
+    }
+})
+
+
 //LIKE CONTROLLER
 const controlLike = () => {
     // //Create a new likes if there's no likes yet. - set it to global
