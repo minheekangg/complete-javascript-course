@@ -1,7 +1,9 @@
 import Search from './models/Search';
 import Recipe from './models/Recipe';
+import List from './models/List';
 import * as searchView from './views/searchView';
 import * as recipeView from './views/recipeView';
+import * as listView from './views/listView';
 import { elements, renderLoader, clearLoader } from './views/base';
 // I AM A GLOBAL CONTROLLER
 /** Global state of the app
@@ -11,6 +13,7 @@ import { elements, renderLoader, clearLoader } from './views/base';
  * - Liked recipes
  */
 const state = {};
+// window.state = state;
 
 // SEARCH CONTROLLER
 const controlSearch = async () => {
@@ -97,16 +100,51 @@ const controlRecipe = async () => {
 // window.addEventListener('load', controlRecipe);
 ['hashchange', 'load'].forEach(event=>window.addEventListener(event, controlRecipe));
 
+// SHOPPING LIST CONTROLLER - triggered by below click fn
+const controlList = () => {
+    //Create a new list if there's no list yet.
+    if (!state.list) state.list = new List();
+
+    //add ingredients to list and UI
+    state.recipe.ingredients.forEach(el=>{
+        const newItem = state.list.addItem(el.count, el.unit, el.ingredient);
+        listView.renderItem(newItem);
+    })
+
+}
+
+
+// Handle delete and update shopping list
+elements.shoppingList.addEventListener('click', e=> {
+    const id = e.target.closest('.shopping__item').dataset.itemid;
+    
+    if (e.target.matches('.shopping__delete, .shopping__delete *')) {
+        //delete from state
+        state.list.deleteItem(id);
+        //delete from ui
+        listView.deleteItem(id);
+    } else if (e.target.matches('.shopping__count-value')) {
+        const val = parseFloat(e.target.value, 10);
+        state.list.updateCount(id, val);
+    }
+})
+
+
 //Handling recipe button clicks
 elements.recipe.addEventListener('click', e=> {
     if (e.target.matches('.btn-decrease, .btn-decrease *') && state.recipe.servings > 1) {
         state.recipe.updateServings('dec');
         recipeView.updateServingsIng(state.recipe)
     }
-    if (e.target.matches('.btn-increase, .btn-increase *') && state.recipe.servings > 1) {
+    if (e.target.matches('.btn-increase, .btn-increase *')) {
         state.recipe.updateServings('inc');
         recipeView.updateServingsIng(state.recipe)
 
+    } else if (e.target.matches('.recipe__btn-add, .recipe__btn-add *') && state.recipe) {
+        //TRIGGER SHOPPING LIST CONTROLLER HERE! - TRIGGERED BY RECIPE VIEW BTTN CLICK
+        controlList();
     }
     console.log(state.recipe)
 })
+
+
